@@ -1,26 +1,1583 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ───────────────────────── Design tokens ───────────────────────── */
+
+@theme {
+  --color-ivory: #faf8f3;
+  --color-sand: #f3efe6;
+  --color-surface: #ffffff;
+  --color-champagne: #e8d5a8;
+  --color-gold: #b89b5e;
+  /* Deeper gold for small text so it meets WCAG AA on ivory. */
+  --color-gold-ink: #7d632f;
+  --color-ink: #24211c;
+  --color-muted: #756f63;
+  --color-muted-strong: #625c51;
+  --color-line: rgba(184, 155, 94, 0.25);
+
+  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-manrope), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ───────────────────────── Base ───────────────────────── */
+
+@layer base {
+  html {
+    background: var(--color-ivory);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100%;
+    background: var(--color-ivory);
+    font-family: var(--font-sans);
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-champagne);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 1.5px solid var(--color-gold-ink);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  img,
+  video {
+    display: block;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ───────────────────────── Typography ───────────────────────── */
+
+@layer components {
+  .container-luxe {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+  }
+
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--color-gold-ink);
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  /* Minimums are tuned so the longest single words ("CONTEMPORARY",
+     "CRAFTSMANSHIP") fit a 320px screen without clipping. */
+  .display-xl {
+    font-size: clamp(2.5rem, 10.5vw, 11rem);
+  }
+  .display-lg {
+    font-size: clamp(2.2rem, 8.6vw, 8.5rem);
+  }
+  .display-md {
+    font-size: clamp(2.1rem, 5.6vw, 5.5rem);
+  }
+  /* Story chapter captions: sized to their column at every width. */
+  .display-chapter {
+    font-size: clamp(2.2rem, 9vw, 3.6rem);
+  }
+  @media (min-aspect-ratio: 17/20) {
+    .display-chapter {
+      font-size: clamp(2.4rem, 5.6vw, 6.2rem);
+    }
+  }
+  .display-feature {
+    font-size: clamp(1.95rem, 8vw, 5.4rem);
+  }
+  @media (min-width: 1024px) {
+    .display-feature {
+      font-size: clamp(2.35rem, 4.6vw, 5.4rem);
+    }
+  }
+  .display-sm {
+    font-size: clamp(2rem, 3.6vw, 3.4rem);
+  }
+  .display em,
+  .display .italic-accent {
+    font-style: italic;
+    font-weight: 300;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-gold-ink);
+  }
+
+  .lead {
+    font-size: clamp(1rem, 1.25vw, 1.125rem);
+    line-height: 1.8;
+    color: var(--color-muted);
+  }
+
+  .mask-line {
+    display: block;
+    overflow: hidden;
+    /* Room for descenders and italic overhang inside the mask. */
+    padding-block: 0.06em;
+    margin-block: -0.06em;
+    padding-inline: 0.04em;
+    margin-inline: -0.04em;
+  }
+  .mask-line > span {
+    display: block;
+    will-change: transform;
+  }
+
+  .word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .word > span {
+    display: inline-block;
+  }
+
+  .hairline {
+    height: 1px;
+    background: var(--color-line);
+  }
+
+  .index-number {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--color-gold-ink);
+  }
+
+  /* ───────────── Links & buttons ───────────── */
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+    transition: background-size 0.6s var(--ease-luxe);
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+    background-position: 0% 100%;
+  }
+
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    min-height: 3.25rem;
+    padding: 0 1.9rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      color 0.5s var(--ease-luxe),
+      border-color 0.5s var(--ease-luxe),
+      background-color 0.5s var(--ease-luxe),
+      transform 0.6s var(--ease-luxe);
+  }
+  .btn::before {
+    /* Gold sheen that rises on hover. */
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, #c9ab6c, var(--color-gold));
+    transform: translateY(101%);
+    transition: transform 0.6s var(--ease-luxe);
+  }
+  .btn:hover::before,
+  .btn:focus-visible::before {
+    transform: translateY(0);
+  }
+  .btn__icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    transition: transform 0.6s var(--ease-luxe);
+  }
+  .btn:hover .btn__icon {
+    transform: translateX(3px);
+  }
+
+  .btn--solid {
+    background: var(--color-ink);
+    color: var(--color-ivory);
+  }
+  .btn--solid:hover {
+    color: var(--color-ink);
+  }
+  .btn--outline {
+    border: 1px solid rgba(36, 33, 28, 0.55);
+    color: var(--color-ink);
+  }
+  .btn--outline:hover {
+    border-color: var(--color-gold);
+    color: var(--color-ink);
+  }
+  .btn--text {
+    min-height: 44px;
+    padding: 0.4rem 0;
+    color: var(--color-ink);
+    overflow: visible;
+  }
+  .btn--text::before {
+    inset: auto 0 0 0;
+    height: 1px;
+    background: var(--color-gold);
+    transform: scaleX(0.35);
+    transform-origin: left;
+  }
+  .btn--text:hover::before {
+    transform: scaleX(1);
+  }
+
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    z-index: 200;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-ink);
+    color: var(--color-ivory);
+    font-size: 0.8rem;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+
+  /* ───────────── Header ───────────── */
+
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.6s var(--ease-luxe),
+      border-color 0.6s var(--ease-luxe),
+      backdrop-filter 0.6s var(--ease-luxe);
+  }
+  .site-header[data-scrolled] {
+    background: rgba(250, 248, 243, 0.78);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-color: var(--color-line);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 1600px;
+    margin-inline: auto;
+    height: 5.5rem;
+    padding-inline: clamp(1.25rem, 3.5vw, 3rem);
+    transition: height 0.6s var(--ease-luxe);
+  }
+  .site-header[data-scrolled] .site-header__inner {
+    height: 4.25rem;
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    padding: 0.5rem 0;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.55rem;
+    height: 1px;
+    background: var(--color-gold);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.6s var(--ease-luxe);
+  }
+  .nav-link:hover::after,
+  .nav-link[aria-current="page"]::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .menu-toggle {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+    padding-inline: 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .menu-toggle__icon {
+    position: relative;
+    width: 1.6rem;
+    height: 0.6rem;
+  }
+  .menu-toggle__icon > span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: currentColor;
+    transition: transform 0.5s var(--ease-luxe), top 0.5s var(--ease-luxe);
+  }
+  .menu-toggle__icon > span:first-child {
+    top: 0;
+  }
+  .menu-toggle__icon > span:last-child {
+    top: 100%;
+  }
+  .menu-toggle__icon[data-open] > span:first-child {
+    top: 50%;
+    transform: rotate(18deg);
+  }
+  .menu-toggle__icon[data-open] > span:last-child {
+    top: 50%;
+    transform: rotate(-18deg);
+  }
+
+  /* ───────────── Cursor (desktop only) ───────────── */
+
+  .cursor {
+    display: none;
+  }
+  html[data-cursor="custom"] .cursor {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 150;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .cursor__ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-ink);
+    transform: translate(-50%, -50%);
+    transition:
+      width 0.5s var(--ease-luxe),
+      height 0.5s var(--ease-luxe),
+      background-color 0.5s var(--ease-luxe),
+      border-color 0.5s var(--ease-luxe);
+    border: 1px solid transparent;
+  }
+  .cursor__label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-ivory);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .cursor[data-variant="cta"] .cursor__ring {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border-color: var(--color-gold);
+  }
+  .cursor[data-variant="view"] .cursor__ring,
+  .cursor[data-variant="explore"] .cursor__ring {
+    width: 88px;
+    height: 88px;
+    background: rgba(36, 33, 28, 0.86);
+    backdrop-filter: blur(4px);
+  }
+  .cursor[data-variant="view"] .cursor__label,
+  .cursor[data-variant="explore"] .cursor__label {
+    opacity: 1;
+  }
+
+  /* ───────────── Editorial media ───────────── */
+
+  .media-frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-sand);
+  }
+  .media-frame img {
+    transition: transform 1.6s var(--ease-luxe);
+  }
+  .media-hover:hover .media-frame img,
+  .media-hover:focus-visible .media-frame img {
+    transform: scale(1.03);
+  }
+
+  .illustrative-tag {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted-strong);
+    background: rgba(250, 248, 243, 0.82);
+  }
+}
+
+/* ───────────────────────── Hero entrance (CSS-only, no JS needed) ───────────────────────── */
+
+@keyframes rise-in {
+  from {
+    transform: translate3d(0, 108%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+/* Visible from the first paint (so the headline is the LCP element) — it only settles. */
+@keyframes settle-in {
+  from {
+    transform: translate3d(0, 0.28em, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes scroll-cue {
+  from {
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-rise > span {
+    animation: rise-in 1s var(--ease-luxe) both;
+    animation-delay: var(--d, 0.1s);
+  }
+  .hero-settle > span {
+    animation: settle-in 1.6s var(--ease-luxe) both;
+    animation-delay: var(--d, 0s);
+  }
+  .hero-fade {
+    animation: fade-up 0.9s var(--ease-luxe) both;
+    animation-delay: var(--d, 0.5s);
+  }
+  .scroll-cue__line {
+    animation: scroll-cue 2.4s var(--ease-curtain) infinite;
+  }
+}
+
+/* ───────────────────────── Cinematic story ───────────────────────── */
+
+.story {
+  position: relative;
+  z-index: 10;
+}
+.story__viewport {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.story__poster {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 1.2s var(--ease-luxe);
+}
+html[data-stage="ready"] .story__poster,
+html[data-stage="sequence"] .story__poster {
+  opacity: 0;
+}
+.story__scene {
+  position: relative;
+  pointer-events: none;
+}
+.story__scene a,
+.story__scene button {
+  pointer-events: auto;
+}
+.story__scene--hero {
+  height: 100vh;
+  height: 100svh;
+}
+
+/* Reduced motion (or no JS): chapters simply stack. */
+.story__scene:not(.story__scene--hero) {
+  display: flex;
+  align-items: center;
+  min-height: 60svh;
+  padding-block: 4rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .story {
+    height: 700vh;
+    height: 700svh;
+  }
+  .story__viewport {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+  .story__scene:not(.story__scene--hero) {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 767px) {
+  .story {
+    height: 600vh;
+    height: 600svh;
+  }
+}
+
+/* The persistent WebGL stage sits behind the page. */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-luxe);
+}
+html[data-stage="ready"] .stage[data-active],
+html[data-stage="sequence"] .stage[data-active] {
+  opacity: 1;
+}
+.stage:not([data-active]) {
+  visibility: hidden;
+}
+
+/* Sections that pass over the stage. */
+.chapter {
+  position: relative;
+  z-index: 10;
+  background: var(--color-ivory);
+}
+
+/* Floating motes for image-based scenes. Static keyframes (transform and
+   opacity only) so the compositor runs them without main-thread work. */
+@keyframes mote-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(-24px, -140px, 0);
+    opacity: 0;
+  }
+}
+@keyframes mote-right {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate3d(22px, -150px, 0);
+    opacity: 0;
+  }
+}
+.mote {
+  position: absolute;
+  width: var(--s, 4px);
+  height: var(--s, 4px);
+  border-radius: 999px;
+  background: radial-gradient(circle, #f6e3b4 0%, rgba(201, 164, 92, 0.55) 45%, transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mote {
+    animation: mote-left 9s linear infinite;
+  }
+  .mote:nth-child(even) {
+    animation-name: mote-right;
+  }
+}
+
+/* ───────────────────────── Reduced motion ───────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ───────────────────────── Hero & chapter layout ─────────────────────────
+   Breakpoint (aspect 17/20) matches the 3D rig's wide/narrow choreography. */
+
+.hero-title {
+  position: absolute;
+  inset-inline: 0;
+  top: 16%;
+  padding-inline: 1.25rem;
+  text-align: center;
+}
+.hero-line-1 {
+  font-size: min(15.5vw, 5.6rem);
+  line-height: 0.95;
+}
+.hero-line-2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: min(10.4vw, 3.6rem);
+  line-height: 1.05;
+  color: var(--color-gold-ink);
+}
+.hero-foot {
+  position: absolute;
+  inset-inline: 0;
+  bottom: max(1.75rem, 5svh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding-inline: 1.25rem;
+  text-align: center;
+}
+
+.scroll-cue {
+  align-items: center;
+  gap: 0.9rem;
+}
+.scroll-cue__label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-muted-strong);
+}
+.scroll-cue__track {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 2.75rem;
+  background: var(--color-line);
+  overflow: hidden;
+}
+.scroll-cue__line {
+  position: absolute;
+  inset: 0;
+  background: var(--color-gold);
+}
+
+.scene-block {
+  position: absolute;
+  inset-inline: 1.25rem;
+  bottom: 11svh;
+  text-align: center;
+  isolation: isolate;
+}
+.scene-block::before {
+  /* Soft ivory halo keeps type legible over polished gold. */
+  content: "";
+  position: absolute;
+  inset: -3rem -2.5rem;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(250, 248, 243, 0.9), rgba(250, 248, 243, 0));
+}
+.scene-block .lead {
+  margin-inline: auto;
+}
+.story-rail {
+  display: none;
+}
+
+@media (min-aspect-ratio: 17/20) {
+  .hero-title {
+    top: 42%;
+    transform: translateY(-50%);
+  }
+  .hero-line-1 {
+    font-size: min(12vh, 10.5vw);
+  }
+  .hero-line-2 {
+    font-size: min(7.4vh, 6.6vw);
+  }
+  .hero-foot {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+    text-align: left;
+  }
+
+  .scene-block {
+    inset-inline: auto;
+    text-align: left;
+    max-width: min(40rem, 44vw);
+  }
+  .scene-block .lead {
+    margin-inline: 0;
+  }
+  .scene-1 .scene-block {
+    left: clamp(1.25rem, 6vw, 6rem);
+    bottom: 12svh;
+  }
+  .scene-2 .scene-block {
+    left: clamp(1.25rem, 6vw, 6rem);
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  /* 05 — the ring is framed right of centre, type holds the left. */
+  .scene-3 .scene-block {
+    left: clamp(1.25rem, 6vw, 6rem);
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  /* 06 — the collection sits low in the frame; the invitation above it. */
+  .scene-4 .scene-block {
+    left: 50%;
+    bottom: auto;
+    top: 12svh;
+    transform: translateX(-50%);
+    text-align: center;
+    max-width: 64rem;
+    width: 90vw;
+  }
+
+  .story-rail {
+    position: absolute;
+    right: clamp(1rem, 2.5vw, 2.5rem);
+    top: 50%;
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    transform: translateY(-50%);
+  }
+}
+@media (min-aspect-ratio: 17/20) and (prefers-reduced-motion: reduce) {
+  .story-rail {
+    display: none;
+  }
+}
+.story-chapters {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.1rem;
+}
+.story-chapters li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  opacity: 0.55;
+  transition:
+    opacity 0.6s var(--ease-luxe),
+    color 0.6s var(--ease-luxe);
+}
+.story-chapters li[data-active] {
+  opacity: 1;
+  color: var(--color-ink);
+}
+.story-chapters__index {
+  color: var(--color-gold-ink);
+}
+.story-chapters__label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.8s var(--ease-luxe);
+}
+.story-chapters li[data-active] .story-chapters__label {
+  max-width: 8rem;
+}
+.story-rail__track {
+  position: relative;
+  width: 1px;
+  background: var(--color-line);
+}
+.story-rail__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-gold);
+  transform-origin: top;
+  transform: scaleY(0);
+}
+
+/* Reduced motion: chapters sit in normal flow. */
+@media (prefers-reduced-motion: reduce) {
+  .story__scene:not(.story__scene--hero) .scene-block {
+    position: relative;
+    inset: auto;
+    transform: none;
+    margin-inline: auto;
+    max-width: 44rem;
+    text-align: center;
+  }
+}
+
+/* Cursor drift on editorial images (desktop; vars set by PointerEffects). */
+.drift {
+  transform: translate3d(calc(var(--drift-x, 0) * -1.4%), calc(var(--drift-y, 0) * -1.4%), 0) scale(1.04);
+  transition: transform 1.4s var(--ease-luxe);
+}
+
+/* ───────────────────────── Chapters ───────────────────────── */
+
+/* Gold caption that unmasks over collection imagery on hover. */
+.hover-caption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.4rem;
+  background: var(--color-ink);
+  color: var(--color-champagne);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.8s var(--ease-luxe);
+}
+.media-hover:hover .hover-caption,
+.media-hover:focus-visible .hover-caption {
+  clip-path: inset(0 0 0 0);
+}
+
+/* Craftsmanship — held chapter on desktop */
+.craft__item {
+  position: relative;
+}
+.craft__item h3 {
+  transition: color 0.6s var(--ease-luxe);
+}
+.craft__item::before {
+  content: "";
+  position: absolute;
+  left: -1.5rem;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  width: 1px;
+  background: var(--color-gold);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.8s var(--ease-luxe);
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .craft {
+    height: 330vh;
+    height: 330svh;
+  }
+  .craft__sticky {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+  .craft__inline-media {
+    display: none;
+  }
+  /* Sequencing states only apply once the director is running; muted colours keep AA contrast. */
+  .craft[data-sequenced] .craft__item:not([data-active]) h3 {
+    color: var(--color-muted);
+  }
+  .craft[data-sequenced] .craft__item[data-active]::before {
+    transform: scaleY(1);
+  }
+  .craft__item ol {
+    margin-top: 2rem;
+  }
+}
+@media (max-width: 1023px), (prefers-reduced-motion: reduce) {
+  .craft__stack {
+    display: none;
+  }
+}
+
+/* Wedding — horizontal gallery on desktop */
+.wedding__track {
+  display: flex;
+  flex-direction: column;
+  gap: 4.5rem;
+  padding: 6rem clamp(1.25rem, 4vw, 3.5rem);
+}
+.wedding__intro,
+.wedding__outro {
+  max-width: 36rem;
+}
+@media (min-width: 1024px) {
+  .wedding__track {
+    flex-direction: row;
+    align-items: flex-end;
+    width: max-content;
+    gap: 5vw;
+    padding: 0 6vw;
+  }
+  .wedding__intro {
+    width: 34vw;
+    align-self: center;
+    flex-shrink: 0;
+  }
+  .wedding__panel {
+    width: 26vw;
+    flex-shrink: 0;
+  }
+  .wedding__panel:nth-child(odd) {
+    transform: translateY(-6vh);
+  }
+  .wedding__outro {
+    width: 26vw;
+    align-self: center;
+    flex-shrink: 0;
+  }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .wedding__sticky {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .wedding__sticky {
+    overflow-x: auto;
+    padding-block: 6rem;
+  }
+}
+
+/* Finale — transparent so the WebGL stage shows through */
+.finale {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: 6rem 5rem;
+  overflow: hidden;
+}
+.finale__fallback {
+  position: absolute;
+  inset: 0 0 50% 0;
+  transition: opacity 1s var(--ease-luxe);
+}
+html[data-stage="ready"] .finale__fallback {
+  opacity: 0;
+}
+.finale__copy {
+  max-width: 44rem;
+}
+@media (min-aspect-ratio: 17/20) {
+  .finale {
+    align-items: center;
+  }
+  .finale__fallback {
+    inset: 8% 2% 8% 48%;
+  }
+  .finale__copy {
+    max-width: min(46rem, 52vw);
+  }
+}
+
+/* ───────────────────────── Product selector (3D) ───────────────────────── */
+
+.selector {
+  display: grid;
+  gap: 2.5rem;
+}
+.selector__stage {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: radial-gradient(60% 55% at 50% 45%, #fffdf8 0%, rgba(250, 248, 243, 0) 70%), var(--color-sand);
+  touch-action: pan-y;
+  user-select: none;
+}
+.selector__still {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 0.9s var(--ease-luxe),
+    transform 1.2s var(--ease-luxe);
+}
+.selector__still[data-active] {
+  opacity: 1;
+  transform: none;
+}
+.selector__stage[data-viewer="ready"] .selector__still {
+  opacity: 0;
+}
+.selector__canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1s var(--ease-luxe);
+}
+.selector__stage[data-viewer="ready"] .selector__canvas {
+  opacity: 1;
+}
+.selector__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--color-muted-strong);
+}
+.selector__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: 1rem;
+}
+.selector__tabs[hidden] {
+  display: none;
+}
+.selector__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-height: 44px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  transition: color 0.5s var(--ease-luxe);
+}
+.selector__tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.35rem;
+  height: 1px;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-luxe);
+}
+.selector__tab:hover,
+.selector__tab[aria-selected="true"] {
+  color: var(--color-ink);
+}
+.selector__tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+.selector__tab-index {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  color: var(--color-gold-ink);
+}
+.selector__details {
+  padding-top: 2rem;
+}
+@media (min-width: 1024px) {
+  .selector {
+    grid-template-columns: 7fr 5fr;
+    align-items: center;
+    gap: 4rem;
+  }
+  .selector__stage {
+    aspect-ratio: 1 / 1;
+  }
+  .selector__tabs {
+    flex-direction: column;
+    gap: 0;
+    border-bottom: 0;
+    padding-bottom: 0;
+    border-left: 1px solid var(--color-line);
+  }
+  .selector__tab {
+    padding-left: 1.4rem;
+  }
+  .selector__tab::after {
+    left: -1px;
+    right: auto;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 1px;
+    height: auto;
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  .selector__tab[aria-selected="true"]::after {
+    transform: scaleY(1);
+  }
+}
+
+/* ───────────────────────── Collection item hover ───────────────────────── */
+
+.piece-card {
+  position: relative;
+}
+.piece-card__line {
+  display: block;
+  height: 1px;
+  margin-top: 1.25rem;
+  background: var(--color-gold);
+  transform: scaleX(0.18);
+  transform-origin: left;
+  transition: transform 0.9s var(--ease-luxe);
+}
+.piece-card__title {
+  transition: transform 0.7s var(--ease-luxe);
+}
+.piece-card__cta {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--color-gold-ink);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.6s var(--ease-luxe),
+    transform 0.6s var(--ease-luxe);
+}
+.piece-card:hover .piece-card__line,
+.piece-card:focus-visible .piece-card__line {
+  transform: scaleX(1);
+}
+.piece-card:hover .piece-card__title,
+.piece-card:focus-visible .piece-card__title {
+  transform: translateY(-4px);
+}
+.piece-card:hover .piece-card__cta,
+.piece-card:focus-visible .piece-card__cta {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: none) {
+  .piece-card__cta {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ───────────────────────── The art of gold (fullscreen reveal) ───────────────────────── */
+
+.reveal__sticky {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  padding: 6rem clamp(1.25rem, 4vw, 3.5rem);
+}
+.reveal__bg {
+  display: none;
+}
+.reveal__product {
+  position: relative;
+  aspect-ratio: 16 / 11;
+}
+.reveal__title {
+  text-align: center;
+  padding-inline: 1.25rem;
+}
+.reveal__macro {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  max-width: 36rem;
+  margin-inline: auto;
+  width: 100%;
+}
+.reveal__caption {
+  text-align: center;
+}
+.reveal__caption p {
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    height: 320vh;
+    height: 320svh;
+  }
+  .reveal__sticky {
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 100vh;
+    height: 100svh;
+    padding: 0;
+    overflow: hidden;
+  }
+  .reveal__bg {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(75% 70% at 50% 50%, rgba(243, 239, 230, 0) 45%, rgba(232, 213, 168, 0.42) 100%);
+  }
+  .reveal__product {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    transform-origin: 50% 76%;
+  }
+  .reveal__title {
+    position: absolute;
+    inset-inline: 0;
+    top: 11%;
+    z-index: 2;
+  }
+  .reveal__macro {
+    position: absolute;
+    inset: 0;
+    max-width: none;
+    aspect-ratio: auto;
+    clip-path: circle(0% at 50% 58%);
+  }
+  .reveal__caption {
+    position: absolute;
+    left: clamp(1.25rem, 6vw, 6rem);
+    bottom: 10svh;
+    z-index: 2;
+    max-width: 30rem;
+    padding: 2rem 2.2rem;
+    text-align: left;
+    background: rgba(250, 248, 243, 0.88);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+  }
+  .reveal__caption p {
+    margin-inline: 0;
+  }
+}
+
+/* Poster fitting mirrors the 3D camera (fixed vertical field of view), so the
+   still and the live scene frame the necklace identically. The renders' edges
+   are page-ivory, so letterboxing is invisible. */
+.story__poster img {
+  object-fit: cover;
+}
+@media (max-aspect-ratio: 17/20), (min-aspect-ratio: 16/9) {
+  .story__poster img {
+    object-fit: contain;
+  }
+}
+
+
+/* ───────────────────────── Mobile-first additions ───────────────────────── */
+
+/* Space reserved for the fixed quick-contact bar on phones and tablets. */
+:root {
+  --action-bar: 0px;
+}
+@media (max-width: 1023px) {
+  :root {
+    --action-bar: calc(3.6rem + env(safe-area-inset-bottom, 0px));
+  }
+  body {
+    padding-bottom: var(--action-bar);
+  }
+}
+
+.action-bar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 30; /* beneath the menu overlay (40) and header (50) */
+  display: flex;
+  gap: 1px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--color-line);
+  border-top: 1px solid var(--color-line);
+  box-shadow: 0 -8px 24px rgba(36, 33, 28, 0.06);
+}
+.action-bar__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3.6rem;
+  background: rgba(250, 248, 243, 0.96);
+  backdrop-filter: blur(10px);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+.action-bar__item--primary {
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+.action-bar__item:active {
+  opacity: 0.85;
+}
+
+/* Hero H1 (the page's single heading 1). */
+.hero-h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.15rem, 4.6vw, 1.5rem);
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+.hero-h1 em {
+  font-style: italic;
+  color: var(--color-muted-strong);
+}
+
+/* Keep the hero foot and chapter captions clear of the quick-contact bar. */
+@media (max-width: 1023px) {
+  .hero-foot {
+    bottom: calc(var(--action-bar) + max(1.25rem, 3svh));
+    gap: 1rem;
+  }
+}
+@media (max-width: 1023px) and (max-aspect-ratio: 17/20) {
+  .scene-block {
+    bottom: calc(var(--action-bar) + 7svh);
+  }
+}
+@media (max-width: 767px) {
+  .scroll-cue {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .scroll-cue__track {
+    height: 2rem;
+  }
+}
+
+/* Touch targets: small text links get a 44px hit area without changing layout. */
+.tap-target {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.link-underline.tap-target {
+  background-position: 100% calc(50% + 0.78em);
+}
+.link-underline.tap-target:hover,
+.link-underline.tap-target:focus-visible {
+  background-position: 0% calc(50% + 0.78em);
+}
+
+/* Selector on phones & tablets: a swipe gallery with large dot controls. */
+.selector__hint--touch {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .selector__hint--mouse {
+    display: none;
+  }
+  .selector__hint--touch {
+    display: block;
+  }
+  .selector {
+    gap: 0;
+  }
+  .selector__tabs {
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    border-bottom: 0;
+    padding: 0.25rem 0 0;
+  }
+  .selector__tab {
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+  }
+  .selector__tab::after {
+    display: none;
+  }
+  .selector__tab-index {
+    display: none;
+  }
+  /* Label stays available to assistive tech; the dot is the visual control. */
+  .selector__tab-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .selector__tab::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    border: 1px solid var(--color-gold);
+    transition:
+      width 0.5s var(--ease-luxe),
+      background-color 0.5s var(--ease-luxe);
+  }
+  .selector__tab[aria-selected="true"]::before {
+    width: 22px;
+    background: var(--color-gold);
+  }
+  .selector__details {
+    padding-top: 1.25rem;
+    text-align: center;
+  }
+  .selector__details .lead {
+    margin-inline: auto;
+  }
+}
+
+.reveal__art {
+  position: absolute;
+  inset: 0;
+}
+.reveal__art--portrait {
+  display: none;
+}
+@media (max-aspect-ratio: 17/20) {
+  .reveal__art--wide {
+    display: none;
+  }
+  .reveal__art--portrait {
+    display: block;
+  }
+}
+/* Reduced motion: the product still is a normal block, not a layered stage. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal__art {
+    position: relative;
+    inset: auto;
+    aspect-ratio: 16 / 11;
+  }
+  .reveal__product {
+    aspect-ratio: auto;
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (max-aspect-ratio: 17/20) {
+  .reveal__product {
+    transform-origin: 50% 63%;
+  }
+}
+
+/* Short portrait phones: the 3D camera pulls back ~12% and frames the jewellery
+   higher (StoryRig SHORT_SCREEN); the poster mirrors that so the hand-over
+   from still to live 3D stays seamless. */
+@media (max-aspect-ratio: 17/20) and (min-aspect-ratio: 1/2) {
+  .story__poster picture {
+    display: block;
+    height: 100%;
+    transform: translateY(-3.6%) scale(0.89);
+  }
+}
+.selector__stage .illustrative-tag {
+  top: 0.75rem;
+  bottom: auto;
 }
